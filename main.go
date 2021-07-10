@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Cumbercubie/api"
+	"github.com/Cumbercubie/controller"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,5 +18,9 @@ func initServer() {
 }
 
 func main() {
-	initServer()
+	// initServer()
+	server := api.InitServer()
+	server.SetGroup("/api", controller.TestControllerGroup)
+	server.Start(":8081")
+
 }
