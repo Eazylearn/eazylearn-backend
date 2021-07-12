@@ -1,13 +1,16 @@
 package repo
 
 import (
-	"net/http"
+	"context"
 
 	"github.com/Cumbercubie/model"
-	"github.com/labstack/echo/v4"
 )
 
-func CreateTestAction(c echo.Context) error {
-	c.JSON(http.StatusOK, model.CreateTest())
+func CreateTest(test model.Test) error {
+	// return &Test{TestId: 1, Name: "New test", QuestionNum: 1}
+	_, err := model.TestDB.Col.InsertOne(context.TODO(), test)
+	if err != nil {
+		return err
+	}
 	return nil
 }

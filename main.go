@@ -1,26 +1,29 @@
 package main
 
 import (
-	"net/http"
+	"os"
 
 	"github.com/Cumbercubie/api"
 	"github.com/Cumbercubie/controller"
-	"github.com/labstack/echo/v4"
+	"github.com/Cumbercubie/db"
+	"github.com/Cumbercubie/model"
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func initServer() {
-	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, Wo!")
-	})
-	e.GET("/student", api.GetStudentById)
-	e.Logger.Fatal(e.Start(":8081"))
+func onDBConnected(c *mongo.Database) {
+	model.InitTestModel(c)
+	model.InitUserModel(c)
 }
-
 func main() {
 	// initServer()
 	server := api.InitServer()
-	server.SetGroup("/api", controller.TestControllerGroup)
+	godotenv.Load(".env")
+	DB_URI := os.Getenv("DB_URI")
+	EzLearnDB := db.CreateUniversalDB(DB_URI, "carie")
+	onDBConnected(EzLearnDB)
+	server.SetGroup("/test", controller.TestControllerGroup)
+	server.SetGroup("/user", controller.UserControllerGroup)
 	server.Start(":8081")
 
 }
