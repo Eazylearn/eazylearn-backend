@@ -35,4 +35,5 @@ var UserDB = &db.Instance{
 
 func InitUserModel(m *mongo.Database) {
 	UserDB.ApplyDatabase(m)
+
 }

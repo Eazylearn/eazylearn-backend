@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func GetUserByFirstnameAction(c echo.Context) error {
+func GetAllUserAction(c echo.Context) error {
 	firstName := c.QueryParams().Get("firstName")
 	// if len(firstName) == 0 {
 	// 	api.Respond(c, &enum.APIResponse{
@@ -18,7 +18,7 @@ func GetUserByFirstnameAction(c echo.Context) error {
 	// 	})
 	// 	return nil
 	// }
-	user, err := repo.GetUserByFirstname(firstName)
+	user, err := repo.GetAllUser(firstName)
 	if err != nil {
 		api.Respond(c, &enum.APIResponse{
 			Status:  enum.APIStatus.Error,
@@ -33,7 +33,34 @@ func GetUserByFirstnameAction(c echo.Context) error {
 	})
 	return nil
 }
+func GetUserByFirstnameAction(c echo.Context) error {
+	firstName := c.QueryParams().Get("firstName")
+
+	if firstName == "" {
+		api.Respond(c, &enum.APIResponse{
+			Status:  enum.APIStatus.Invalid,
+			Message: fmt.Sprint("firstName không được trống"),
+		})
+		return nil
+	}
+
+	user, err := repo.GetUserByFirstname(firstName)
+	if err != nil {
+		api.Respond(c, &enum.APIResponse{
+			Status:  enum.APIStatus.Error,
+			Message: fmt.Sprintf(err.Error()),
+		})
+		return nil
+	}
+	return api.Respond(c, &enum.APIResponse{
+		Status:  enum.APIStatus.Ok,
+		Message: fmt.Sprint("Lấy user thành công"),
+		Data:    user,
+	})
+
+}
 func UserControllerGroup(g *echo.Group) error {
-	g.GET("/", GetUserByFirstnameAction)
+	g.GET("/get", GetAllUserAction)
+	g.GET("/by-firstname", GetUserByFirstnameAction)
 	return nil
 }
